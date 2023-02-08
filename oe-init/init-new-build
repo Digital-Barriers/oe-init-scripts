@@ -49,6 +49,40 @@ echo "" >> conf/local.conf
 cat conf/local.conf.bk >> conf/local.conf
 rm conf/local.conf.bk
 
+cat <<CVE_CONFIG_BLOCK >> conf/local.conf
+
+## Adding automatic CVE tracking output to the build from init-new-build script.
+##
+## NOTE:
+##
+##  * The CVE database contains entries which have been deemed not to affect
+##    OE-Core by the OE community. These CVE entries are excluded (using
+##    CVE_CHECK_IGNORE) and will appear as Ignored entries in reports. See
+##    the include statement below and the source file:
+##
+##    ##################################################################
+##    #                                                                #
+##    # WE NEED TO READ THIS TO SEE IF WE AGREE WITH THEIR CONCLUSIONS #
+##    #                                                                #
+##    # ------ On 2023-02-07 this caused 20 CVEs to be ignored. ------ #
+##    #                                                                #
+##    ##################################################################
+##
+##    * ./arran-build-submodules.git/openembedded/oe-core.git/meta/conf/distro/include/cve-extra-exclusions.inc
+##
+##  * Sometimes the build will be delayed due to the cve-fetch activity which
+##    updates the local CVE database.
+##
+##  * The cve-search logging messes up your CLI build output with WARNING output.
+##
+##  * For more info about cve-search, see:
+##
+##    * https://docs.yoctoproject.org/dev/dev-manual/vulnerabilities.html
+##
+INHERIT += "cve-check"
+include conf/distro/include/cve-extra-exclusions.inc
+
+CVE_CONFIG_BLOCK
 
 cat <<EOF
 
