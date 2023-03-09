@@ -46,8 +46,46 @@ echo "SSTATE_DIR = '${SSTATE_DIR}'" >> conf/local.conf
 echo "PERSISTENT_DIR = '${PERSISTENT_DIR}'" >> conf/local.conf
 echo "" >> conf/local.conf
 
+# SELinux
+
 cat conf/local.conf.bk >> conf/local.conf
 rm conf/local.conf.bk
+
+
+cat <<SELINUX_CONFIG_BLOCK >> conf/local.conf
+
+DISTRO_FEATURES:append=" acl xattr pam selinux"
+
+##
+## See: https://github.com/ni/meta-selinux/tree/nilrt/master/kirkstone
+##
+
+##
+## Specify a preferred provider for the virtual/refpolicy:
+##
+
+# PREFERRED_PROVIDER_virtual/refpolicy ?= "refpolicy-mls"
+
+##
+## Enable the preferred refpolicy-minimum:
+##
+
+# PREFERRED_VERSION_refpolicy-minimum = "2.20151208"
+# PREFERRED_VERSION_refpolicy = "2.20151208"
+
+
+##
+## By default selinux enabled images coming up with "sysvinit" as init manager,
+## we can use "systemd" as an init manager using below changes to local.conf
+##
+
+DISTRO_FEATURES:remove = " sysvinit"
+DISTRO_FEATURES:append = " systemd"
+VIRTUAL-RUNTIME_init_manager = "systemd"
+DISTRO_FEATURES_BACKFILL_CONSIDERED = ""
+
+SELINUX_CONFIG_BLOCK
+
 
 cat <<CVE_CONFIG_BLOCK >> conf/local.conf
 
